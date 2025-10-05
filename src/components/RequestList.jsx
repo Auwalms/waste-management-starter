@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-// import {
-//   collection,
-//   query,
-//   where,
-//   orderBy,
-//   onSnapshot,
-// } from "firebase/firestore";
-// import { db } from "../firebase/config";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  onSnapshot,
+} from "firebase/firestore";
+import { db } from "../firebase/config";
 import { useAuth } from "../contexts/AuthContext";
 import { mockRequests } from "../data/mockData";
 
@@ -16,15 +16,6 @@ export default function RequestList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Sort requests by creation date, most recent first
-    const sortedRequests = [...mockRequests].sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
-    setRequests(sortedRequests);
-    setLoading(false);
-
-    // TODO: Replace with Firestore query during workshop
-    /**
     // Create query for user's requests
     const q = query(
       collection(db, "requests"),
@@ -44,8 +35,6 @@ export default function RequestList() {
 
     // Cleanup listener on unmount
     return () => unsubscribe();
-
-    */
   }, []);
 
   function getStatusColor(status) {
@@ -65,7 +54,8 @@ export default function RequestList() {
 
   function formatDate(timestamp) {
     if (!timestamp) return "Just now";
-    return timestamp.toLocaleDateString("en-US", {
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
       year: "numeric",

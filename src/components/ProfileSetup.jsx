@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { mockProfile, mockProviders } from "../data/mockData";
-
-// TODO: Import Firestore functions during workshop
-// import { doc, setDoc, collection, getDocs, query, where } from 'firebase/firestore';
-// import { db } from '../firebase/config';
+import {
+  doc,
+  setDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
+import { db } from "../firebase/config";
 
 export default function ProfileSetup() {
   const { currentUser, userProfile, refreshProfile } = useAuth();
@@ -23,68 +27,42 @@ export default function ProfileSetup() {
     if (userProfile) {
       navigate("/dashboard");
     }
-
-    // TODO: Replace with Firestore query during workshop
-    // Load mock providers for now
-    console.log("MOCK: Loading service providers from mock data");
-    setProviders(mockProviders);
-
-    // Real Firebase implementation:
-    /*
     async function fetchProviders() {
       try {
         const q = query(
-          collection(db, 'serviceProviders'),
-          where('active', '==', true)
+          collection(db, "serviceProviders"),
+          where("active", "==", true)
         );
         const querySnapshot = await getDocs(q);
-        const providersList = querySnapshot.docs.map(doc => ({
+        const providersList = querySnapshot.docs.map((doc) => ({
           id: doc.id,
-          ...doc.data()
+          ...doc.data(),
         }));
         setProviders(providersList);
       } catch (error) {
-        console.error('Error fetching providers:', error);
+        console.error("Error fetching providers:", error);
       }
     }
     fetchProviders();
-    */
   }, [userProfile, navigate]);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true);
 
-    // TODO: Replace with Firestore setDoc during workshop
-    // Mock - just log the data
-    console.log("MOCK: Saving profile to Firestore:", {
-      displayName: currentUser.displayName,
-      email: currentUser.email,
-      photoURL: currentUser.photoURL,
-      address,
-      phone,
-      serviceProvider: selectedProvider,
-    });
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    navigate("/dashboard");
-
-    /*
-      setError("");
-      try {
-      // Real Firebase implementation:
-
-      await setDoc(doc(db, 'users', currentUser.uid), {
+    setError("");
+    try {
+      await setDoc(doc(db, "users", currentUser.uid), {
         displayName: currentUser.displayName,
         email: currentUser.email,
-        photoURL: currentUser.photoURL,
+        photoURL:
+          currentUser.photoURL ||
+          "https://firebase.google.com/static/images/brand-guidelines/logo-monochrome.png",
         address,
         phone,
         serviceProvider: selectedProvider,
-        createdAt: new Date()
+        createdAt: new Date(),
       });
-
 
       await refreshProfile();
       navigate("/dashboard");
@@ -92,7 +70,7 @@ export default function ProfileSetup() {
       setError("Failed to save profile. Please try again.");
       console.error(err);
     }
-*/
+
     setLoading(false);
   }
 

@@ -1,8 +1,7 @@
 import { useState, useRef } from "react";
-// import { collection, addDoc, serverTimestamp } from "firebase/firestore";
-// import { db } from "../firebase/config";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import { db } from "../firebase/config";
 import { useAuth } from "../contexts/AuthContext";
-import { mockUser, mockProfile, mockRequests } from "../data/mockData";
 
 export default function RequestForm() {
   const { currentUser, userProfile } = useAuth();
@@ -14,8 +13,7 @@ export default function RequestForm() {
   const [gettingLocation, setGettingLocation] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const videoRef = useRef(null);
-  const [cameraActive, setCameraActive] = useState(false);
+  const cameraInputRef = useRef(null);
 
   const wasteTypes = [
     "General Waste",
@@ -57,49 +55,9 @@ export default function RequestForm() {
     }
   }
 
-  async function startCamera() {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" },
-      });
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        setCameraActive(true);
-      }
-    } catch (err) {
-      alert("Could not access camera. Please use file upload instead.");
-      console.error(err);
-    }
-  }
-
-  function capturePhoto() {
-    const video = videoRef.current;
-    const canvas = document.createElement("canvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0);
-
-    // Compress to JPEG with quality 0.7 to reduce size
-    const base64 = canvas.toDataURL("image/jpeg", 0.7);
-
-    // Check size (rough estimate: base64 is ~1.37x original)
-    const sizeInBytes = (base64.length * 3) / 4;
-    if (sizeInBytes > 1024 * 1024) {
-      alert(
-        "Captured image is too large. Please try again or use a lower resolution."
-      );
-      return;
-    }
-
-    setImageBase64(base64);
-    setImagePreview(base64);
-    stopCamera();
-  }
-
-  function stopCamera() {
-    if (videoRef.current && videoRef.current.srcObject) {
-      videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
-      setCameraActive(false);
+  function handleTakePhoto() {
+    if (cameraInputRef.current) {
+      cameraInputRef.current.click();
     }
   }
 
@@ -132,33 +90,7 @@ export default function RequestForm() {
     e.preventDefault();
     setLoading(true);
 
-    // Mock - just log and reset form
-    const newRequest = {
-      id: Date.now().toString(),
-      userId: mockUser.uid,
-      address,
-      wasteType,
-      imageBase64,
-      location,
-      serviceProvider: mockProfile.serviceProvider,
-      status: "pending",
-      createdAt: new Date(),
-    };
-
-    mockRequests.push(newRequest);
-    console.log("Request submitted:", newRequest);
-
-    // Reset form
-    setWasteType("");
-    setImageBase64("");
-    setImagePreview(null);
-    setLocation(null);
-    setSuccess(true);
-
-    setTimeout(() => setSuccess(false), 3000);
-
-    //TODO: Uncomment and implement Firestore submission during workshop
-    /**try {
+    try {
       // Create request in Firestore with base64 image
       await addDoc(collection(db, "requests"), {
         userId: currentUser.uid,
@@ -187,7 +119,6 @@ export default function RequestForm() {
       console.error("Error submitting request:", error);
       alert("Failed to submit request. Please try again.");
     }
-*/
     setLoading(false);
   }
 
@@ -295,16 +226,53 @@ export default function RequestForm() {
               Waste Photo (Optional - Max 1MB)
             </label>
 
-            {!imagePreview && !cameraActive && (
-              <div className="flex gap-2">
-                <label className="flex-1 cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                  <div className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 transition text-center">
+            {!imagePreview && (
+              <div className="space-y-2">
+                {/* Hidden file input with camera capture for mobile */}
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+
+                <div className="grid grid-cols-2 gap-2">
+                  {/* Upload from Gallery */}
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                    <div className="w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 transition text-center">
+                      <svg
+                        className="w-8 h-8 mx-auto mb-2 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                      <span className="text-sm text-gray-600">
+                        Upload Photo
+                      </span>
+                    </div>
+                  </label>
+
+                  {/* Take Photo with Camera */}
+                  <button
+                    type="button"
+                    onClick={handleTakePhoto}
+                    className="px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 transition"
+                  >
                     <svg
                       className="w-8 h-8 mx-auto mb-2 text-gray-400"
                       fill="none"
@@ -315,65 +283,16 @@ export default function RequestForm() {
                         strokeLinecap="round"
                         strokeLinejoin="round"
                         strokeWidth={2}
-                        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
                       />
                     </svg>
-                    <span className="text-sm text-gray-600">
-                      Upload from gallery
-                    </span>
-                  </div>
-                </label>
-                <button
-                  type="button"
-                  onClick={startCamera}
-                  className="flex-1 px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-green-500 transition"
-                >
-                  <svg
-                    className="w-8 h-8 mx-auto mb-2 text-gray-400"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                  <span className="text-sm text-gray-600">Take photo</span>
-                </button>
-              </div>
-            )}
-
-            {cameraActive && (
-              <div className="relative">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  playsInline
-                  className="w-full rounded-lg"
-                />
-                <div className="flex gap-2 mt-4">
-                  <button
-                    type="button"
-                    onClick={capturePhoto}
-                    className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-green-700"
-                  >
-                    Capture Photo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={stopCamera}
-                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
-                  >
-                    Cancel
+                    <span className="text-sm text-gray-600">Take Photo</span>
                   </button>
                 </div>
               </div>
