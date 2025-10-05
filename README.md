@@ -641,25 +641,17 @@ service cloud.firestore {
       allow write: if false; // Only admins can modify via console
     }
 
-    // User profiles - users can only access their own profile
-    match /users/{userId} {
-      allow read: if request.auth != null && request.auth.uid == userId;
-      allow create, update: if request.auth != null && request.auth.uid == userId;
-      allow delete: if false;
+    // only authenticated users can submit a create, read and update their profile
+    match /users/{userId}{
+    	allow create, read, update: if request.auth != null && request.auth.uid == userId;
     }
 
-    // Waste pickup requests - users can only access their own requests
-    match /requests/{requestId} {
-      allow read: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow create: if request.auth != null
-                   && request.resource.data.userId == request.auth.uid
-                   && request.resource.data.serviceProvider is string
-                   && request.resource.data.wasteType is string
-                   // Limit base64 image size (roughly 1.5MB)
-                   && (!request.resource.data.keys().hasAny(['imageBase64'])
-                       || request.resource.data.imageBase64.size() < 2000000);
-      allow update: if request.auth != null && resource.data.userId == request.auth.uid;
-      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+   
+    // Users can only update their own request
+    // only authenticated users can submit a create.
+    match /requests/{requestId}{
+    	allow read, update, delete: if request.auth.uid != null && resource.data.userId == request.auth.uid;
+      allow create: if request.auth.uid != null;
     }
   }
 }
