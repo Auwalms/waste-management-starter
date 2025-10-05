@@ -65,6 +65,7 @@ export default function RequestList() {
 
   function formatDate(timestamp) {
     if (!timestamp) return "Just now";
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return timestamp.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
