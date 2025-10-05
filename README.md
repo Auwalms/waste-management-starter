@@ -237,6 +237,8 @@ export const auth = getAuth(app);
 export const db = getFirestore(app);
 ```
 
+> [Important] : Ensure you rename your `.env.example` to `.env` and replace the Keys with your correct key before running your code.
+
 **Checkpoint**: Run your app. If there are no console errors, Firebase is initialized!
 
 ### Step 3.3: Replace Mock Authentication
