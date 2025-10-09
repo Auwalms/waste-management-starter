@@ -73,15 +73,16 @@ Open `src/data/mockData.js` to see the sample data structure:
 // Current mock user
 export const mockUser = {
   uid: "mock-user-123",
-  email: "demo@example.com",
-  displayName: "Demo User",
-  photoURL: "https://via.placeholder.com/150",
+  email: "ciroma_ca@example.com",
+  displayName: "Ciroma Chukwuma Adekunle",
+  photoURL:
+    "https://firebase.google.com/static/images/brand-guidelines/logo-monochrome.png",
 };
 
 // Current mock profile
 export const mockProfile = {
-  address: "123 Main Street, Lagos, Nigeria",
-  phone: "+234 800 000 0000",
+  address: "AJ Ahmadu Plaza, Custom Line, plot 160 Makurdi Rd, Lafia",
+  phone: "+234 903 902 2216",
   serviceProvider: "GreenCycle Waste Services",
 };
 
@@ -90,6 +91,7 @@ export const mockProviders = [
   { id: "1", name: "GreenCycle Waste Services", active: true },
   { id: "2", name: "EcoClean Solutions", active: true },
   { id: "3", name: "City Waste Management", active: true },
+  { id: "4", name: "Urban Waste Solutions", active: false },
 ];
 
 // Mock requests
@@ -97,28 +99,28 @@ export const mockRequests = [
   {
     id: "1",
     userId: "mock-user-123",
-    userEmail: "demo@example.com",
-    userName: "Demo User",
-    address: "123 Main Street, Lagos",
+    userEmail: "ciroma_ca@example.com",
+    userName: "Ciroma Chukwuma Adekunle",
+    address: "AJ Ahmadu Plaza, Custom Line, plot 160 Makurdi Rd, Lafia",
     wasteType: "Recyclable",
     imageBase64: null,
-    location: { latitude: 6.5244, longitude: 3.3792 },
+    location: { latitude: 7.539487, longitude: 8.514175 },
     serviceProvider: "GreenCycle Waste Services",
-    status: "pending",
-    createdAt: new Date("2025-01-15"),
+    status: "completed",
+    createdAt: new Date("2025-10-01"),
   },
   {
     id: "2",
     userId: "mock-user-123",
-    userEmail: "demo@example.com",
-    userName: "Demo User",
-    address: "456 Oak Avenue, Abuja",
+    userEmail: "ciroma_ca@example.com",
+    userName: "Ciroma Chukwuma Adekunle",
+    address: "AJ Ahmadu Plaza Custom Line, plot 160 Makurdi Rd, Lafia",
     wasteType: "Organic",
     imageBase64: null,
     location: null,
     serviceProvider: "EcoClean Solutions",
-    status: "completed",
-    createdAt: new Date("2025-01-10"),
+    status: "pending",
+    createdAt: new Date("2025-10-08"),
   },
 ];
 ```
@@ -646,7 +648,7 @@ service cloud.firestore {
     	allow create, read, update: if request.auth != null && request.auth.uid == userId;
     }
 
-   
+
     // Users can only update their own request
     // only authenticated users can submit a create.
     match /requests/{requestId}{

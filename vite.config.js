@@ -18,6 +18,9 @@ export default defineConfig({
         theme_color: "#16a34a",
         background_color: "#ffffff",
         display: "standalone",
+        start_url: "/",
+        scope: "/",
+        orientation: "portrait",
         icons: [
           {
             src: "icons/pwa-152x152.png",
@@ -35,12 +38,26 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,jpg,jpeg}"],
         runtimeCaching: [
           {
+            urlPattern: /^https?:\/\/firestore\.googleapis\.com\/.*/i,
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "firestore-cache",
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 60 * 60 * 24 * 7, // 1 week
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
             urlPattern: /^https:\/\/firebasestorage\.googleapis\.com\/.*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "firebase-images-cache",
               expiration: {
-                maxEntries: 50,
+                maxEntries: 10,
                 maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
               },
             },

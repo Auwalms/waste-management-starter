@@ -9,6 +9,7 @@ import Login from "./components/Login";
 import ProfileSetup from "./components/ProfileSetup";
 import Dashboard from "./components/Dashboard";
 import ProtectedRoute from "./components/ProtectedRoute";
+import InstallPrompt from "./components/InstallPrompt";
 
 function App() {
   return (
@@ -25,15 +26,15 @@ function App() {
             }
           />
           <Route
-            path="/dashboard"
+            path="/*"
             element={
               <ProtectedRoute>
                 <Dashboard />
               </ProtectedRoute>
             }
           />
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        <InstallPrompt />
       </AuthProvider>
     </Router>
   );
