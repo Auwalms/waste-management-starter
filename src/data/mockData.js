@@ -2,14 +2,14 @@
 export const mockUser = {
   uid: "mock-user-123",
   email: "ciroma_ca@example.com",
-  displayName: "Chiroma Chukwuma Adekunle",
+  displayName: "Ciroma Chukwuma Adekunle",
   photoURL:
     "https://firebase.google.com/static/images/brand-guidelines/logo-monochrome.png",
 };
 
 // Current mock profile
 export const mockProfile = {
-  address: "AJ Ahmadu plaze Custom Line, plot 160 Makurdi Rd, Lafia",
+  address: "AJ Ahmadu Plaza, Custom Line, plot 160 Makurdi Rd, Lafia",
   phone: "+234 903 902 2216",
   serviceProvider: "GreenCycle Waste Services",
 };
@@ -28,8 +28,8 @@ export const mockRequests = [
     id: "1",
     userId: "mock-user-123",
     userEmail: "ciroma_ca@example.com",
-    userName: "Chiroma Chukwuma Adekunle",
-    address: "AJ Ahmadu plaze Custom Line, plot 160 Makurdi Rd, Lafia",
+    userName: "Ciroma Chukwuma Adekunle",
+    address: "AJ Ahmadu Plaza, Custom Line, plot 160 Makurdi Rd, Lafia",
     wasteType: "Recyclable",
     imageBase64: null,
     location: { latitude: 7.539487, longitude: 8.514175 },
@@ -41,8 +41,8 @@ export const mockRequests = [
     id: "2",
     userId: "mock-user-123",
     userEmail: "ciroma_ca@example.com",
-    userName: "Chiroma Chukwuma Adekunle",
-    address: "AJ Ahmadu plaze Custom Line, plot 160 Makurdi Rd, Lafia",
+    userName: "Ciroma Chukwuma Adekunle",
+    address: "AJ Ahmadu Plaza Custom Line, plot 160 Makurdi Rd, Lafia",
     wasteType: "Organic",
     imageBase64: null,
     location: null,
